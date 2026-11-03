@@ -1,6 +1,5 @@
 aiogram
 python-dotenv
 requests
-sqlalchemy
 openai
 apscheduler

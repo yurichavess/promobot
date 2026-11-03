@@ -1,8 +1,12 @@
 import asyncio
+import logging
 import os
+from datetime import datetime, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+
+logger = logging.getLogger("promobot.scheduler")
 
 INTERVALO_MINUTOS = int(os.getenv("SCHEDULER_INTERVAL_MINUTES", "10"))
 
@@ -16,17 +20,17 @@ async def iniciar_scheduler(job):
         id="buscar_promocoes",
         max_instances=1,
         coalesce=True,
+        
+        next_run_time=datetime.now(timezone.utc),
     )
     scheduler.start()
 
-    print(f"Scheduler iniciado. Intervalo: {INTERVALO_MINUTOS} minuto(s).")
-    print("Pressione Ctrl+C para parar.")
-
-    await job()
+    logger.info("Scheduler iniciado. Intervalo: %d minuto(s).", INTERVALO_MINUTOS)
+    logger.info("Pressione Ctrl+C para parar.")
 
     try:
-        while True:
-            await asyncio.sleep(3600)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
-        print("Scheduler encerrado.")
+       
+        await asyncio.Event().wait()
+    finally:
+        scheduler.shutdown(wait=False)
+        logger.info("Scheduler encerrado.")

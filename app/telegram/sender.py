@@ -21,10 +21,6 @@ def criar_bot():
     return Bot(token=TOKEN)
 
 
-def formatar_moeda(valor):
-    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-
 async def enviar_mensagem(mensagem):
     if not CHANNEL_ID:
         raise RuntimeError("CHANNEL_ID nao encontrado. Verifique o arquivo .env.")

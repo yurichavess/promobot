@@ -17,15 +17,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("promobot")
 
-
 PAUSA_ENTRE_ENVIOS = float(os.getenv("SEND_DELAY_SECONDS", "3"))
 
 
 async def processar_produto(produto):
-    """Processa um produto. Retorna 'enviado', 'duplicado' ou 'ignorado'."""
+  
     titulo = produto.get("titulo", "<sem titulo>")
 
- 
+   
     if not oferta_valida(produto):
         logger.info("Oferta ignorada: %s", titulo)
         return "ignorado"
@@ -34,7 +33,7 @@ async def processar_produto(produto):
         logger.info("Produto ja enviado: %s", titulo)
         return "duplicado"
 
-  
+   
     mensagem = await asyncio.to_thread(gerar_copy, produto)
     await enviar_mensagem(mensagem)
     marcar_como_enviado(produto)
@@ -53,7 +52,7 @@ async def executar_fluxo():
         try:
             status = await processar_produto(produto)
         except Exception:
-          
+            
             logger.exception(
                 "Erro ao processar produto: %s", produto.get("titulo", "<sem titulo>")
             )
@@ -93,4 +92,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
